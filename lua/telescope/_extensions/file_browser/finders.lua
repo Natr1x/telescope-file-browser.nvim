@@ -253,7 +253,9 @@ fb_finders.finder = function(opts)
       end
       -- (re-)initialize finder on first start or refresh due to action
       if not self._finder then
-        if self.files then
+        if self._custom_finder then
+          self._finder = self:_custom_finder()
+        elseif self.files then
           self._finder = self:_browse_files()
         else
           self._finder = self:_browse_folders()

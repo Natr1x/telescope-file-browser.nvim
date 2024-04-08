@@ -109,11 +109,11 @@ fb_utils.delete_dir_buf = function(dir)
 end
 
 -- redraws prompt and results border contingent on picker status
-fb_utils.redraw_border_title = function(current_picker)
+fb_utils.redraw_border_title = function(current_picker, prompt_title)
   local finder = current_picker.finder
   if current_picker.prompt_border and not finder.prompt_title then
-    local new_title = finder.files and "File Browser" or "Folder Browser"
-    current_picker.prompt_border:change_title(new_title)
+    prompt_title = prompt_title or (finder.files and "File Browser" or "Folder Browser")
+    current_picker.prompt_border:change_title(prompt_title)
   end
   if current_picker.results_border and not finder.results_title then
     local new_title

@@ -683,10 +683,48 @@ fb_actions.toggle_browser = function(prompt_bufnr, opts)
   opts.reset_prompt = vim.F.if_nil(opts.reset_prompt, true)
   local current_picker = action_state.get_current_picker(prompt_bufnr)
   local finder = current_picker.finder
+
   finder.files = not finder.files
+
+  if current_picker.sorter ~= finder.sorter then
+    current_picker.sorter = finder.sorter
+  end
+
+  if finder._custom_finder then
+    finder.files = false
+    finder._custom_finder = nil
+  end
 
   fb_utils.redraw_border_title(current_picker)
   current_picker:refresh(finder, { reset_prompt = opts.reset_prompt, multi = current_picker._multi })
+end
+
+--- Toggle between custom finders
+---@param custom_finder function: Function which provides a custom finder
+---@param prompt_title string: The prompt title to show for the finder
+---@param custom_sorter function: A sorter function to use
+fb_actions.toggle_custom_finder = function(custom_finder, prompt_title, custom_sorter)
+  print("Adding custom finder")
+  return function (prompt_bufnr, opts)
+    print("Called custom finder")
+    opts = opts or {}
+    opts.reset_prompt = vim.F.if_nil(opts.reset_prompt, true)
+    local current_picker = action_state.get_current_picker(prompt_bufnr)
+    local finder = current_picker.finder
+
+    if finder._custom_finder ~= custom_finder then
+      current_picker.sorter = custom_sorter
+      finder._custom_finder = custom_finder
+      fb_utils.redraw_border_title(current_picker, prompt_title)
+    else
+      current_picker.sorter = finder.sorter
+      finder._custom_finder = nil
+      finder.files = true
+      fb_utils.redraw_border_title(current_picker)
+    end
+
+    current_picker:refresh(finder, { reset_prompt = opts.reset_prompt, multi = current_picker._multi })
+  end
 end
 
 --- Toggles all selections akin to |telescope.actions.toggle_all| but ignores parent & current directory

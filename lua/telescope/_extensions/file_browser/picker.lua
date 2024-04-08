@@ -104,6 +104,8 @@ fb_picker.file_browser = function(opts)
   -- handle case that current buffer is a hidden file
   opts.hidden = (select_buffer and vim.fn.expand("%:p:t"):sub(1, 1) == ".") and true or opts.hidden
   opts.finder = fb_finder.finder(opts)
+  opts.finder.sorter = conf.file_sorter(opts)
+
   -- find index of current buffer in the results
   if select_buffer then
     local buf_name = vim.api.nvim_buf_get_name(0)
@@ -125,7 +127,7 @@ fb_picker.file_browser = function(opts)
       results_title = Path:new(opts.path):make_relative(cwd) .. os_sep,
       prompt_prefix = fb_utils.relative_path_prefix(opts.finder),
       previewer = conf.file_previewer(opts),
-      sorter = conf.file_sorter(opts),
+      sorter = opts.finder.sorter,
     })
     :find()
 end
