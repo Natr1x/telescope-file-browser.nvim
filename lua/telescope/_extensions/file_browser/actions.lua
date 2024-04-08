@@ -910,6 +910,15 @@ fb_actions.open_dir = function(prompt_bufnr, _, dir)
 
   finder.files = true
   finder.path = open_dir_path(finder, path, upward)
+
+  if current_picker.sorter ~= finder.sorter then
+    current_picker.sorter = finder.sorter
+  end
+
+  if finder._custom_finder then
+    finder._custom_finder = nil
+  end
+
   fb_utils.redraw_border_title(current_picker)
   current_picker:refresh(
     finder,
